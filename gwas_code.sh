@@ -1,0 +1,24 @@
+bolt \
+    --bim=UKB_chr${chr_num}.bim \
+	--bed=UKB_chr${chr_num}.bed \
+	--fam=UKB_chr${chr_num}.fam \
+	--bgenFile=UKB_chr${chr_num}.bgen \
+	--sampleFile=UKB_chr${chr_num}.sample \
+	--geneticMapFile=genetic_map_hg19_withX.txt.gz \
+	--bgenMinMAF=0.001 \
+	--bgenMinINFO=0.3 \
+	--phenoFile=phenotypedata.txt \
+    --phenoCol=LST \
+	--covarFile=phenotypedata.txt \
+	--covarCol=array \
+	--qCovarCol=age \
+	--qCovarCol=PC{1:10} \
+	--modelSnps=w_hm3.snplist \
+    --lmm \
+	--numLeaveOutChunks=2 \
+    --LDscoresFile=LDSCORE.1000G_EUR.tab.gz \
+    --LDscoresMatchBp \
+	--verboseStats \
+	--numThreads=4 \
+	--statsFileBgenSnps=LST_bgen_c${chr_num}_male.stats.gz \
+	--statsFile=LST_bfile_c${chr_num}_male.stats.gz

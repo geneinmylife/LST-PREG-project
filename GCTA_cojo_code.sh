@@ -1,0 +1,2 @@
+plink --bfile UKB_chr${chr_num} --extract p5e8_chr${chr_num}_snp.tsv --make-bed --out UKB_chr${chr_num}_temp
+gcta64 --bfilUKB_chr${chr_num}_temp --cojo-file p5e8_chr${chr_num}_cojo.tsv --cojo-p 5E-8 --cojo-slct --diff-freq 0.2 --out p5e8_chr${chr_num}_output
