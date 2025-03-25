@@ -1,0 +1,120 @@
+## Content Checklist ##
+######## 1.Combine GWAS outcomes
+  #1.1 combine the sex-specific-LST GWAS outcome
+  #1.2 Combining binary LST GWAS outcome is similar
+######## 2. Calculation of the F-statistics 
+  #2.1 Calculate F-stats of each SNP
+  #2.2 Calculate R2 of each SNP
+  #2.3 Calculate overall F-stats
+######## 3. LD Score regression
+######## 4. Pairwise Z-test
+  #4.1 Calculate Pairwise Z-test statistic
+  #4.2 Calculate p-value (two-tailed test)
+
+
+library(devtools)
+library(ggplot2)
+library(TwoSampleMR)
+library(readxl)
+library(writexl)
+library(dbplyr)
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(MungeSumstats)
+library(data.table)
+library(ldscr)
+
+######## 1.Combine GWAS outcomes
+
+#1.1 combine the sex-specific-LST GWAS outcome 
+folder_path <- "/Volumes/T7 SS/female24h/bgen"  
+files <- list.files(folder_path, full.names = TRUE)
+data_list <- lapply(files, read.table, header = TRUE)
+merged_data_female <- bind_rows(data_list)
+head(merged_data_female)
+merged_data_female_dup <- merged_data_female[!duplicated(merged_data_female$SNP),]
+write_tsv(merged_data_female_dup,"LST_female_24.txt")
+
+folder_path <- "/Volumes/T7 SS/male24h/bgen" 
+files <- list.files(folder_path, full.names = TRUE)
+data_list <- lapply(files, read.table, header = TRUE)
+merged_data_male <- bind_rows(data_list)
+head(merged_data_male)
+merged_data_male_dup <- merged_data_male[!duplicated(merged_data_male$SNP),]
+write_tsv(merged_data_male_dup,"LST_male_24.txt")
+
+#1.2 Combining binary LST GWAS outcome is similar.
+
+
+
+######## 2. Calculation of the F-statistics 
+#all data used below have conducted CGTA-COJO analysis. 
+female <- fread("LST_female_cojo5e8_fixedcolnames.txt", header = TRUE)
+male <- fread("LST_male_cojo5e8_fixedcolnames.txt", header = TRUE)
+LST02 <- fread("transform_output_LST_0_2_e6_cojo.txt", header = TRUE)
+LST06 <- fread("transform_output_LST_0_6_e6_cojo.txt", header = TRUE)
+
+#2.1 Calculate F-stats of each SNP
+female$F_statistic <- (female$b^2) / (female$se^2)
+male$F_statistic <- (male$b^2) / (male$se^2)
+LST02$F_statistic <- (LST02$b^2) / (LST02$se^2)
+LST06$F_statistic <- (LST06$b^2) / (LST06$se^2)
+
+#2.2 Calculate R2 of each SNP
+female$N <- n1 #Samplesize
+male$N <- n2 #Samplesize
+LST02$N <- n3 #Samplesize
+LST06$N <- n4 #Samplesize
+female$R2_contrib <- female$b^2 / (female$b^2 + female$N * female$se^2)
+male$R2_contrib <- male$b^2 / (male$b^2 + male$N * male$se^2)
+R2_total <- sum(female$R2_contrib)
+R2_total <- sum(male$R2_contrib)
+LST02$R2_contrib <- LST02$b^2 / (LST02$b^2 + LST02$N * LST02$se^2)
+LST06$R2_contrib <- LST06$b^2 / (LST06$b^2 + LST06$N * LST06$se^2)
+R2_total_02 <- sum(LST02$R2_contrib)
+R2_total_06 <- sum(LST06$R2_contrib)
+
+#2.3 Calculate overall F-stats
+k <- nrow(female)  # numbers of IVs
+N_mean <- mean(female$N)  
+F_stat <- ( (N_mean - k - 1) * R2_total ) / ((1 - R2_total) * k)
+k <- nrow(male) 
+N_mean <- mean(male$N)  
+F_stat <- ( (N_mean - k - 1) * R2_total ) / ((1 - R2_total) * k)
+k <- nrow(LST02) 
+N_mean <- mean(LST02$N) 
+F_stat <- ( (N_mean - k - 1) * R2_total_02 ) / ((1 - R2_total_02) * k)
+k <- nrow(LST06) 
+N_mean <- mean(R2_total_06$N) 
+F_stat <- ( (N_mean - k - 1) * R2_total_06 ) / ((1 - R2_total_06) * k)
+
+write_tsv(female, "LST_female_cojo5e8_r2_F_stastic.txt")
+write_tsv(male, "LST_male_cojo5e8_r2_F_stastic.txt")
+write_tsv(LST02, "LST_female_0_2_F_stastic.txt")
+write_tsv(LST06, "LST_female_0_6_F_stastic.txt")
+
+######## 3. LD Score regression
+data$N <- sample_size # Replace sample_size with the actual number of participants in the study.
+data_male$N <- sample_size  
+
+colnames(data)[colnames(data) == "ALLELE1"] <- "A1"
+colnames(data)[colnames(data) == "ALLELE0"] <- "A2"
+colnames(data_male)[colnames(data_male) == "ALLELE1"] <- "A1"
+colnames(data_male)[colnames(data_male) == "ALLELE0"] <- "A2"
+
+cc_female <- ldsc_h2(munged_sumstats = data, ancestry = "EUR")
+cc_male <- ldsc_h2(munged_sumstats = data_male, ancestry = "EUR")
+
+write_tsv(cc_female,"ldsc_female_0322.txt")
+write_tsv(cc_male,"ldsc_male_0322.txt")
+
+######## 4. Pairwise Z-test
+#4.1 Calculate Pairwise Z-test statistic
+merged_gwas1$Z.male <- merged_gwas1$beta.male / merged_gwas1$se.male
+merged_gwas1$Z.female <- merged_gwas1$beta.female / merged_gwas1$se.female
+merged_gwas1$Z_diff <- (merged_gwas1$Z.male - merged_gwas1$Z.female) / sqrt(2)
+
+#4.2 Calculate p-value (two-tailed test)
+merged_gwas1$P_diff <- 2 * pnorm(-abs(merged_gwas1$Z_diff))
+
