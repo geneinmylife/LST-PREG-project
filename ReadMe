@@ -1,1 +1,26 @@
-This github repo describes the codes for the LST on PREG outcome study
+LST-PREG-project
+
+## Overview
+This repository contains GWAS and Mendelian Randomization (MR) code for a study investigating the causal relationship between leisure screen time (LST) and risks of pregnancy-related health disorders, including ectopic pregnancy, miscarriages, polycystic ovarian syndrome (PCOS), and endometriosis. Key findings include:
+- 25 female-specific SNPs and 9 male-specific SNPs were identified in our sex-stratified GWAS. 
+- LST exhibits higher heritability in females compared to males.
+- Female-specific genetic instruments reveal that higher LST increases risks of ectopic pregnancy , PCOS , and endometriosis .
+- LST exceeding 2 hours/day significantly elevates ectopic pregnancy risk, with further escalation beyond 6 hours/day.
+
+---
+
+## Installation
+- R (≥4.0)
+- Required R packages:
+  ```R
+  install.packages("remotes")
+  remotes::install_github("MRCIEU/TwoSampleMR")  # Core MR analysis
+  install.packages("dplyr")                      # Data manipulation
+   #other packages are listed in each code.
+
+##The following code were used in this study:
+ 1. gwas_code.sh: To conduct a sex-stratified and time-stratified GWAS on leisure screen time (LST) from the UK Biobank database with BOLT-LMM linear mixed models.
+ 2. GCTA_cojo_code.sh: To identify the instrument variables of LST.
+ 3. Post-GWAS analysis.R: To combine GWAS output data, calculate F statistics and conduct LDSC and pair-wise Z test.
+ 4. Two-sample-MR analysis of continuous LST exposure.R: To identify causal effect between female LST and five pregnancy-related outcomes.
+ 5. Two-sample-MR analysis of binary LST exposure.R: To identify causal effect of long LST and short LST on ectopic pregnant.
