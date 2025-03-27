@@ -74,6 +74,38 @@ outcome_dat <- read_outcome_data(
 )
 outcome_dat$outcome <- "PCOS_PMC6300389"
 
+#outcome4-RM
+outcome_dat <- read_outcome_data(
+  snps = exposure_dat$SNP,  
+  filename = "/Users/Downloads/Twosample/LST/-other/finngen_R11_N14_HABITABORT.gz", 
+  sep = "\t", 
+  snp_col = "rsids",  
+  beta_col = "beta",  
+  se_col = "sebeta",  
+  effect_allele_col = "alt", 
+  other_allele_col = "ref",  
+  eaf_col = "af_alt",  
+  pval_col = "pval"  
+)
+outcome_dat$outcome <- "finngen_R11_N14_HABITABORT"
+
+#outcome5-SM
+outcome_dat <- read_outcome_data(
+  snps = exposure_dat$SNP,  
+  filename = "/Users/Downloads/Twosample/LST/-other/SM_eur_sumstats_unfiltered.txt", 
+  sep = "\t", 
+  snp_col = "SNP",  
+  beta_col = "Effect	",  
+  se_col = "StdErr",  
+  effect_allele_col = "Effect_allele", 
+  other_allele_col = "Other_allele",  
+  eaf_col = "EAF",  
+  pval_col = "Pvalue"  
+)
+outcome_dat$outcome <- "SM_eur"
+
+
+
 #Conduct MR analysis
 dat <- NULL 
 try(dat <- harmonise_data(exposure_dat, outcome_dat,action=2))
