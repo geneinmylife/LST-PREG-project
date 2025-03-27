@@ -131,6 +131,29 @@ MR_DIVW_results<-cbind('LST',MR_DIVW$SNPs,MR_DIVW$Estimate,MR_DIVW$StdError,MR_D
 colnames(MR_DIVW_results) <- c("Pheno","SNPs","Estimate","StdError","CILower","CIUpper","Pvalue")
 mr_debiased_ivw_results <- MR_DIVW_results
 
+dat$samplesize.exposure <- exposure_samplesize #samplesize of exposure
+dat$samplesize.outcome <- NULL
+dat$samplesize.outcome <- outcome_samplesize #samplesize of outcome
+dat <- cbind(dat,rsq.exposure=1,rsq.outcome=1,ncase= case_samplesize,ncontrol=control_samplesize)
+dat$rsq.exposure <- (get_r_from_pn(p=dat$pval.exposure, 
+                                   n=dat$samplesize.exposure))^2
+
+dat$rsq.outcome <- (get_r_from_lor(
+  lor=dat$beta.outcome,af=dat$eaf.outcome,
+  ncase=dat$ncase,ncontrol=dat$ncontrol,
+  prevalence=dat$ncase/dat$samplesize.outcome))^2
+
+harmdat <- dat
+
+st <- psych::r.test( 
+  n = harmdat$samplesize.exposure, 
+  n2 = harmdat$samplesize.outcome, 
+  r12 = sqrt(harmdat$rsq.exposure), 
+  r34 = sqrt(harmdat$rsq.outcome))
+
+harmdat$steiger_dir <- harmdat$rsq.exposure > harmdat$rsq.outcome
+harmdat$steiger_pval <- pnorm(-abs(st$z)) * 2
+
 # Show MR results
 mr_results
 mr_robust
@@ -142,7 +165,7 @@ mr_heterogeneity(dat)
 mr_pleiotropy_test(dat)
 mr_debiased_ivw_results
 mr_raps_results
-
+harmdat
 
 ##Save MR files
 exposure <- NULL   
@@ -155,6 +178,7 @@ result_file4 <- paste0("./results/",exposure,".mr_single.txt")
 result_file5 <- paste0("./results/",exposure,".mr_robust_results.txt")
 result_file6 <- paste0("./results/",exposure,".mr_raps_results.txt")
 result_file7 <- paste0("./results/",exposure,".mr_debiased_ivw_results.txt")
+result_file8 <- paste0("./results/",exposure,".mr_harmdat.txt")
 if (exists("dat")==TRUE){ write.table(dat,file=result_file0,sep="\t",col.names=T,row.names=F,quote=F)}
 if (exists("mr_results")==TRUE){ write.table(mr_results,file=result_file,sep="\t",col.names=T,row.names=F,quote=F)}
 if (exists("mr_hetero")==TRUE){ write.table(mr_hetero,file=result_file2,sep="\t",col.names=T,row.names=F,quote=F)}
@@ -163,6 +187,7 @@ if (exists("mr_single")==TRUE){write.table(mr_single,file=result_file4,sep="\t",
 if (exists("mr_robust_results")==TRUE){write.table(mr_robust_results,file=result_file5,sep="\t",col.names=T,row.names=F,quote=F)}
 if (exists("mr_raps_results")==TRUE){write.table(mr_raps_results,file=result_file6,sep="\t",col.names=T,row.names=F,quote=F)}
 if (exists("mr_debiased_ivw_results")==TRUE){write.table(mr_debiased_ivw_results,file=result_file7,sep="\t",col.names=T,row.names=F,quote=F)}
+if (exists("harmdat")==TRUE){write.table(harmdat,file=result_file7,sep="\t",col.names=T,row.names=F,quote=F)}
 #################################################################
 
 
