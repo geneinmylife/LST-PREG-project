@@ -116,15 +116,20 @@ exp(res$b[1]-1.96*res$se[1])
 exp(res$b[1]+1.96*res$se[1])
 
 # MR.raps analysis
-b_exp <- dat$beta.exposure
-b_out <- dat$beta.outcome
-se_exp <- dat$se.exposure
-se_out <- dat$se.outcome
+b_exp <- dat1$beta.exposure
+b_out <- dat1$beta.outcome
+se_exp <- dat1$se.exposure
+se_out <- dat1$se.outcome
 
 mr_raps_results <- mr.raps(b_exp, b_out, se_exp, se_out, over.dispersion = FALSE, loss.function = "huber")
 
 # De-biased IVW analysis
-mr_debiased_ivw_results <- mr(dat, method_list = "mr_ivw_mre")
+library(MendelianRandomization)
+ham_dat_2 <- dat_to_MRInput(dat1)
+MR_DIVW<-mr_divw(ham_dat_2[[1]])
+MR_DIVW_results<-cbind('LST',MR_DIVW$SNPs,MR_DIVW$Estimate,MR_DIVW$StdError,MR_DIVW$CILower,MR_DIVW$CIUpper,MR_DIVW$Pvalue)
+colnames(MR_DIVW_results) <- c("Pheno","SNPs","Estimate","StdError","CILower","CIUpper","Pvalue")
+mr_debiased_ivw_results <- MR_DIVW_results
 
 # Show MR results
 mr_results
