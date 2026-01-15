@@ -1,24 +1,51 @@
-bolt \
-    --bim=UKB_chr${chr_num}.bim \
-	--bed=UKB_chr${chr_num}.bed \
-	--fam=UKB_chr${chr_num}.fam \
-	--bgenFile=UKB_chr${chr_num}.bgen \
-	--sampleFile=UKB_chr${chr_num}.sample \
-	--geneticMapFile=genetic_map_hg19_withX.txt.gz \
-	--bgenMinMAF=0.001 \
-	--bgenMinINFO=0.3 \
-	--phenoFile=phenotypedata.txt \
-    --phenoCol=LST \
-	--covarFile=phenotypedata.txt \
-	--covarCol=array \
-	--qCovarCol=age \
-	--qCovarCol=PC{1:10} \
-	--modelSnps=w_hm3.snplist \
-    --lmm \
-	--numLeaveOutChunks=2 \
-    --LDscoresFile=LDSCORE.1000G_EUR.tab.gz \
-    --LDscoresMatchBp \
-	--verboseStats \
-	--numThreads=4 \
-	--statsFileBgenSnps=LST_bgen_c${chr_num}_male.stats.gz \
-	--statsFile=LST_bfile_c${chr_num}_male.stats.gz
+
+########## REGENIE-Step1 ##########
+#!/bin/bash
+source /share/apps/anaconda3/etc/profile.d/conda.sh
+conda activate regenie_env
+
+GENOdir="/data/UKBB/qc_genotype/output"
+SNP_DIR="/share/home/SNP/output"
+PHENOdir="/share/home/PHENO/input"
+OUTdir="/share/home/OUT/output"
+regenie \
+  --step 1 \
+  --pgen ${GENOdir}/ukb_allchr_merged \
+  --extract ${SNP_DIR}/combined_ld_pruned_snplist.txt \
+  --phenoFile ${PHENOdir}/pheno.txt \
+  --covarFile ${PHENOdir}/pheno.txt \
+  --phenoCol cluster \
+  --covarColList age,sex,array,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
+  --keep ${PHENOdir}/sample_id.txt \
+  --bt \
+  --bsize 1000 \
+  --lowmem \
+  --lowmem-prefix tmp_rg \
+  --out ${OUTdir}/step1_bin
+
+########## REGENIE-Step2 ##########
+#!/bin/bash
+source /share/apps/anaconda3/etc/profile.d/conda.sh
+conda activate regenie_env
+
+GENOdir="/data/UKBB/qc_genotype/output"
+PHENOdir="/share/home/PHENO/input"
+Step1dir="/share/home/OUT/output"
+Step2dir="/share/home/OUT2/output"
+
+regenie \
+  --step 2 \
+  --pgen ${GENOdir}/ukb_allchr_merged \
+  --phenoFile ${PHENOdir}/pheno.txt \
+  --covarFile ${PHENOdir}/pheno.txt \
+  --phenoCol cluster \
+  --covarColList age,sex,array,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
+  --keep ${PHENOdir}/sample_id.txt \
+  --bsize 200 \
+  --bt \
+  --firth \
+  --approx \
+  --pThresh 0.999999 \
+  --pred ${Step1dir}/step1_bin_pred.list \
+  --out ${Step2dir}/step2_bin
+done
