@@ -1,7 +1,5 @@
 
 ########## REGENIE-Step1 ##########
-#!/bin/bash
-source /share/apps/anaconda3/etc/profile.d/conda.sh
 conda activate regenie_env
 
 GENOdir="/data/UKBB/qc_genotype/output"
@@ -24,8 +22,6 @@ regenie \
   --out ${OUTdir}/step1_bin
 
 ########## REGENIE-Step2 ##########
-#!/bin/bash
-source /share/apps/anaconda3/etc/profile.d/conda.sh
 conda activate regenie_env
 
 GENOdir="/data/UKBB/qc_genotype/output"
