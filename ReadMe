@@ -1,11 +1,17 @@
-
+# `Sex-Stratified Genetic Analyses Mapping the Influences of Sedentary Behaviors and Physical Activity on Female Reproductive Health`
 
 ## Overview
-This repository contains GWAS and Mendelian Randomization (MR) code for a study investigating the causal relationship between sedentary behaviours, physical activity and risks of pregnancy-related health disorders. Key findings include:
+This repository contains genome-wide association study (GWAS) and Mendelian Randomization (MR) code for a study investigating the causal relationships between sedentary behaviours, physical activity and risks of pregnancy-related disorders. 
+Key findings of our study include:
+
+```r
 - 18 novel sex-stratified variants were identified in our sex-stratified GWAS. 
 - LST exhibits higher heritability in females compared to males.
 - Female-specific genetic instruments reveal that higher LST increases risks of menorrhagia, endometriosis, PCOS and ectopic pregnancy.
 - LST exceeding 4 hours/day elevates menorrhagia and endometriosis risk.
+```
+
+
 
 ---
 
