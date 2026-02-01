@@ -2,10 +2,11 @@
 ########## REGENIE-Step1 ##########
 conda activate regenie_env
 
-GENOdir="/data/UKBB/qc_genotype/output"
-SNP_DIR="/share/home/SNP/output"
-PHENOdir="/share/home/PHENO/input"
-OUTdir="/share/home/OUT/output"
+GENOdir="/pathway/to/genotype/data"
+SNP_DIR="/pathway/to/snplist"
+PHENOdir="/pathway/to/phenotype/data"
+OUTdir="/pathway/to/output"
+
 regenie \
   --step 1 \
   --pgen ${GENOdir}/ukb_allchr_merged \
@@ -24,10 +25,10 @@ regenie \
 ########## REGENIE-Step2 ##########
 conda activate regenie_env
 
-GENOdir="/data/UKBB/qc_genotype/output"
-PHENOdir="/share/home/PHENO/input"
-Step1dir="/share/home/OUT/output"
-Step2dir="/share/home/OUT2/output"
+GENOdir="/pathway/to/genotype/data"
+SNP_DIR="/pathway/to/snplist"
+PHENOdir="/pathway/to/phenotype/data"
+OUTdir="/pathway/to/output"
 
 regenie \
   --step 2 \
