@@ -13,7 +13,7 @@ library(mr.raps)
 library(MendelianRandomization)
 
 exposure_dat <- read_exposure_data(
-  filename = as.character("/Users/exposure.tsv"),
+  filename = as.character("exposure.tsv"),
   sep = "\t",
   snp_col = "SNP",
   beta_col = "BETA",
@@ -27,7 +27,7 @@ exposure_dat$exposure <- "LST"
 
 outcome_dat <- read_outcome_data(
   snps = exposure_dat$SNP,  
-  filename = "/Users/outcome.tsv.gz", 
+  filename = "outcome.tsv.gz", 
   sep = "\t",  
   snp_col = "rs_id",  
   beta_col = "beta",  
