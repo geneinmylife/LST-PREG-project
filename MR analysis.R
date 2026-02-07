@@ -108,7 +108,7 @@ MRMVObject_egger<-mr_mvegger(mvmr_input_mr,
 
 sres <- strength_mvmr(r_input = mvmr_input_mr, gencov = 0)
 
-LIML <- mr_mvivw(mvmr_input_mr, model = "random", robust = TRUE)
+Robust MV-IVW <- mr_mvivw(mvmr_input_mr, model = "random", robust = TRUE)
 
 wtd_median <- mr_mvmedian(mvmr_input_mr)
 
